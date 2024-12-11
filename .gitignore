@@ -1,4 +1,5 @@
 # ... yes I should have formulated my test cases on a better standard.
+*.DS_Store
 *input.txt
 *input-1.txt
 *input-2.txt
