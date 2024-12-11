@@ -189,9 +189,11 @@ long GetStonesFromDict(IEnumerable<long> stoneNums)
         data[num] += numStones;
     }
     var currentIter = new Dictionary<long, long>();
+    long totalStones = 0;
     foreach (var stoneNum in stoneNums)
     {
         UpdateCount(stoneNum, 1, currentIter);
+        totalStones++;
     }
     // now blink!
     for (var i = 0; i < numBlinks; i++)
@@ -216,6 +218,7 @@ long GetStonesFromDict(IEnumerable<long> stoneNums)
                     // Console.WriteLine("{0} -> {1} & {2}", stoneNumStr, firstPart, otherPart);
                     UpdateCount(long.Parse(firstPart), entry.Value, nextIter);
                     UpdateCount(long.Parse(otherPart), entry.Value, nextIter);
+                    totalStones += entry.Value;
                 }
                 else
                 {
@@ -226,14 +229,15 @@ long GetStonesFromDict(IEnumerable<long> stoneNums)
         }
         currentIter = nextIter;
     }
-    long total = 0;
-    // Console.WriteLine("----");
-    foreach(KeyValuePair<long, long> entry in currentIter)
-    {
-        // Console.WriteLine(entry.Key + " -> " + entry.Value);
-        total += entry.Value;
-    }
-    return total;
+    return totalStones;
+    //long total = 0;
+    //// Console.WriteLine("----");
+    //foreach(KeyValuePair<long, long> entry in currentIter)
+    //{
+    //    // Console.WriteLine(entry.Key + " -> " + entry.Value);
+    //    total += entry.Value;
+    //}
+    //return total;
 }
 
 
