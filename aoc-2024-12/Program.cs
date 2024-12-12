@@ -15,6 +15,7 @@ char GetPlotSpot(int x, int y, List<char[]> farm)
 }
 
 // create farm
+var watch = System.Diagnostics.Stopwatch.StartNew();
 var farm = new List<char[]>();
 foreach (var line in fileLines)
 {
@@ -26,8 +27,8 @@ var seenSpots = new Dictionary<string, char>();
 bool CanReachSideUpDownViaX(int startX, int startY, char search, bool isNorthCheck, Dictionary<string, bool> sides, List<char []> farm)
 {
     var currX = startX - 1;
-    Console.WriteLine("  Searching for {0} ({3}) starting at {1},{2}", search, startX, startY, isNorthCheck ? "north" : "south");
-    Console.WriteLine(" First Spot == {0}", GetPlotSpot(currX, startY, farm));
+    // Console.WriteLine("  Searching for {0} ({3}) starting at {1},{2}", search, startX, startY, isNorthCheck ? "north" : "south");
+    // Console.WriteLine(" First Spot == {0}", GetPlotSpot(currX, startY, farm));
     while (GetPlotSpot(currX, startY, farm) == search)
     {
         if (GetPlotSpot(currX, isNorthCheck ? startY - 1 : startY + 1, farm) == search)
@@ -35,12 +36,12 @@ bool CanReachSideUpDownViaX(int startX, int startY, char search, bool isNorthChe
             break;
         }
         var key = string.Format("{2},y,{0},{1}", currX, isNorthCheck ? startY - 1 : startY + 1, isNorthCheck ? "n" : "s");
-        Console.WriteLine("     Trying y, {0}, {1}", currX, isNorthCheck ? startY - 1 : startY + 1);
+        // Console.WriteLine("     Trying y, {0}, {1}", currX, isNorthCheck ? startY - 1 : startY + 1);
         foreach (var side in sides)
         {
             if (key == side.Key)
             {
-                Console.WriteLine("    found!");
+                // Console.WriteLine("    found!");
                 return true;
             }
         }
@@ -53,13 +54,13 @@ bool CanReachSideUpDownViaX(int startX, int startY, char search, bool isNorthChe
         {
             break;
         }
-        Console.WriteLine("     Trying y, {0}, {1}", currX, isNorthCheck ? startY - 1 : startY + 1);
+        // Console.WriteLine("     Trying y, {0}, {1}", currX, isNorthCheck ? startY - 1 : startY + 1);
         var key = string.Format("{2},y,{0},{1}", currX, isNorthCheck ? startY - 1 : startY + 1, isNorthCheck ? "n" : "s");
         foreach (var side in sides)
         {
             if (key == side.Key)
             {
-                Console.WriteLine("    found!");
+                // Console.WriteLine("    found!");
                 return true;
             }
         }
@@ -71,21 +72,21 @@ bool CanReachSideUpDownViaX(int startX, int startY, char search, bool isNorthChe
 bool CanReachSideLeftRightViaY(int startX, int startY, char search, bool isWestCheck, Dictionary<string, bool> sides, List<char []> farm)
 {
     var currY = startY - 1;
-    Console.WriteLine("  Searching for {0} ({3}) starting at {1},{2}", search, startX, startY, isWestCheck ? "west" : "east");
-    Console.WriteLine(" First Spot == {0}", GetPlotSpot(startX, currY, farm));
+    // Console.WriteLine("  Searching for {0} ({3}) starting at {1},{2}", search, startX, startY, isWestCheck ? "west" : "east");
+    // Console.WriteLine(" First Spot == {0}", GetPlotSpot(startX, currY, farm));
     while (GetPlotSpot(startX, currY, farm) == search)
     {
         if (GetPlotSpot(isWestCheck ? startX - 1 : startX + 1, currY, farm) == search)
         {
             break;
         }
-        Console.WriteLine("     Trying y, {0}, {1}", isWestCheck ? startX - 1 : startX + 1, currY);
+        // Console.WriteLine("     Trying y, {0}, {1}", isWestCheck ? startX - 1 : startX + 1, currY);
         var key = string.Format("{2},x,{0},{1}", isWestCheck ? startX - 1 : startX + 1, currY, isWestCheck ? "w" : "e");
         foreach (var side in sides)
         {
             if (key == side.Key)
             {
-                Console.WriteLine("    found!");
+                // Console.WriteLine("    found!");
                 return true;
             }
         }
@@ -98,13 +99,13 @@ bool CanReachSideLeftRightViaY(int startX, int startY, char search, bool isWestC
         {
             break;
         }
-        Console.WriteLine("     Trying y, {0}, {1}", isWestCheck ? startX - 1 : startX + 1, currY);
+        // Console.WriteLine("     Trying y, {0}, {1}", isWestCheck ? startX - 1 : startX + 1, currY);
         var key = string.Format("{2},x,{0},{1}", isWestCheck ? startX - 1 : startX + 1, currY, isWestCheck ? "w" : "e");
         foreach (var side in sides)
         {
             if (key == side.Key)
             {
-                Console.WriteLine("    found!");
+                // Console.WriteLine("    found!");
                 return true;
             }
         }
@@ -224,7 +225,7 @@ bool CanReachSideLeftRightViaY(int startX, int startY, char search, bool isWestC
                 }
                 else
                 {
-                    Console.WriteLine("Looking west: Character at {0} is NOT {1}! {3} in cache? {2}", westSideKey, search, sideCache.ContainsKey(westSideKey), westSideKey);
+                    // Console.WriteLine("Looking west: Character at {0} is NOT {1}! {3} in cache? {2}", westSideKey, search, sideCache.ContainsKey(westSideKey), westSideKey);
                     perimeter++;
                     if (!sideCache.ContainsKey(westSideKey) && !CanReachSideLeftRightViaY(item.Item1, item.Item2, spot, true, sideCache, farm))
                     {
@@ -258,14 +259,16 @@ for (var y = 0; y < farm.Count; y++)
         {
             // process this spot
             (var totalSpots, var perimeter, var totalSides) = FindPlot(x, y, farm[y][x], farm);
-            Console.WriteLine("{0} has totalSpots {1}", farm[y][x], totalSpots);
-            Console.WriteLine("{0} has perimeter {1}", farm[y][x], perimeter);
-            Console.WriteLine("{0} has total sides {1}", farm[y][x], totalSides);
-            Console.WriteLine("----");
+            //Console.WriteLine("{0} has totalSpots {1}", farm[y][x], totalSpots);
+            //Console.WriteLine("{0} has perimeter {1}", farm[y][x], perimeter);
+            //Console.WriteLine("{0} has total sides {1}", farm[y][x], totalSides);
+            //Console.WriteLine("----");
             totalPrice += totalSpots * perimeter;
             totalPriceWithSides += totalSpots * totalSides;
         }
     }
 }
+watch.Stop();
 Console.WriteLine("Price of fence part 1 is {0}", totalPrice);
 Console.WriteLine("Price of fence part 2 is {0}", totalPriceWithSides);
+Console.WriteLine("{0}ms", watch.ElapsedMilliseconds);
