@@ -1,0 +1,31 @@
+# !/bin/sh
+
+touch aoc-2024-12/input.txt
+touch aoc-2024-13/input.txt
+touch aoc-2024-14/input.txt
+touch aoc-2024-15/input.txt
+touch aoc-2024-16/input.txt
+touch aoc-2024-17/input.txt
+touch aoc-2024-18/input.txt
+touch aoc-2024-19/input.txt
+touch aoc-2024-20/input.txt
+touch aoc-2024-21/input.txt
+touch aoc-2024-22/input.txt
+touch aoc-2024-23/input.txt
+touch aoc-2024-24/input.txt
+touch aoc-2024-25/input.txt
+
+touch aoc-2024-12/example.txt
+touch aoc-2024-13/example.txt
+touch aoc-2024-14/example.txt
+touch aoc-2024-15/example.txt
+touch aoc-2024-16/example.txt
+touch aoc-2024-17/example.txt
+touch aoc-2024-18/example.txt
+touch aoc-2024-19/example.txt
+touch aoc-2024-20/example.txt
+touch aoc-2024-21/example.txt
+touch aoc-2024-22/example.txt
+touch aoc-2024-23/example.txt
+touch aoc-2024-24/example.txt
+touch aoc-2024-25/example.txt
