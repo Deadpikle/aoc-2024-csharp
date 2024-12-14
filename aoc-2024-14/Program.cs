@@ -106,6 +106,7 @@ var topLeftQuad = 0;
 var topRightQuad = 0;
 var bottomLeftQuad = 0;
 var bottomRightQuad = 0;
+// tests for edge cases on small grid
 // robots = new List<Robot>() 
 // { 
 //     new Robot(0,0,0,0), 
@@ -155,3 +156,82 @@ Draw();
 Console.WriteLine("Robots in {0}, {1}, {2}, {3}", topLeftQuad, topRightQuad, bottomLeftQuad, bottomRightQuad);
 var part1Ans = topLeftQuad * bottomLeftQuad * topRightQuad * bottomRightQuad;
 Console.WriteLine("Part 1: {0}", part1Ans);
+foreach (var robot in robots)
+{
+    robot.Reset();
+}
+//
+// make a christmas tree?!
+string GetMap()
+{
+    var spots = new Dictionary<(int, int), int>();
+    foreach (var robot in robots)
+    {
+        if (!spots.ContainsKey((robot.X, robot.Y)))
+        {
+            spots.Add((robot.X, robot.Y), 0);
+        }
+        spots[(robot.X, robot.Y)]++;
+    }
+    string output = "";
+    for (var y = 0; y < height; y++)
+    {
+        for (var x = 0; x < width; x++)
+        {
+            if (spots.ContainsKey((x, y)))
+            {
+                output += spots[(x, y)];
+            }
+            else
+            {
+                output += ".";
+            }
+        }
+        output += Environment.NewLine;
+    }
+    return output;
+}
+var mapStrings = "";
+var nextTree = 99;
+for (var i = 0; i < 100000; i++)
+{
+    // move robots
+    foreach (var robot in robots)
+    {
+        var nextX = robot.X + robot.DeltaX;
+        var nextY = robot.Y + robot.DeltaY;
+        // resolve wrapping
+        if (nextX < 0)
+        {
+            nextX = width + nextX; // + as it's already negative
+        }
+        if (nextX >= width)
+        {
+            nextX = nextX - width;
+        }
+        if (nextY < 0)
+        {
+            nextY = height + nextY; // + as it's already negative
+        }
+        if (nextY >= height)
+        {
+            nextY = nextY - height;
+        }
+        robot.X = nextX;
+        robot.Y = nextY;
+    }
+
+    if (i + 1 == nextTree)
+    {
+        Console.WriteLine("After {0} seconds:", i + 1);
+        mapStrings += string.Format("After {0} seconds:", i + 1);
+        mapStrings += Environment.NewLine;
+        mapStrings += GetMap();
+        mapStrings += Environment.NewLine;
+        mapStrings += Environment.NewLine;
+        nextTree += 101; // magic number for my input
+    }
+    // This will draw them easy enough for manual verification, however,
+    // technically, now that we know what it looks like, we COULD find it via code
+}
+File.WriteAllText("output.txt", mapStrings);
