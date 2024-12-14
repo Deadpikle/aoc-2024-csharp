@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Numerics;
+using System.Text.RegularExpressions;
 
 var fileLines = File.ReadAllLines("input.txt");
 // var fileLines = File.ReadAllLines("example.txt");
@@ -32,7 +33,7 @@ foreach (var line in fileLines)
         }
         else if (line.StartsWith("Prize:"))
         {
-            var machine = new Machine(tmpButtonA!, tmpButtonB!, x, y);
+            var machine = new Machine(tmpButtonA!, tmpButtonB!, x, y, false);
             if (machine.IsSolvable())
             {
                 machines.Add(machine);
@@ -41,7 +42,7 @@ foreach (var line in fileLines)
     }
 }
 Console.WriteLine("We have {0} machines", machines.Count);
-var total = 0;
+BigInteger total = 0;
 foreach (var machine in machines)
 {
     total += machine.GetLeastCost();

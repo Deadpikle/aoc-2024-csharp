@@ -1,38 +1,40 @@
-﻿class Machine
+﻿using System.Numerics;
+
+class Machine
 {
     public Button A;
     public Button B;
-    public int PrizeX;
-    public int PrizeY;
+    public BigInteger PrizeX;
+    public BigInteger PrizeY;
 
     public const int CostA = 3;
     public const int CostB = 1;
 
-    public Machine(Button a, Button b, int x, int y)
+    public Machine(Button a, Button b, BigInteger x, BigInteger y, bool isPart2 = false)
     {
         A = a;
         B = b;
-        PrizeX = x;
-        PrizeY = y;
+        PrizeX = x + (isPart2 ? 10000000000000 : 0);
+        PrizeY = y + (isPart2 ? 10000000000000 : 0);
         SolutionCache = (-1, -1);
-        dict = new Dictionary<(int, int), bool>();
+        dict = new Dictionary<(BigInteger, BigInteger), bool>();
     }
 
-    private (int, int) SolutionCache;
+    private (BigInteger, BigInteger) SolutionCache;
 
-    private Dictionary<(int, int), bool> dict;
+    private Dictionary<(BigInteger, BigInteger), bool> dict;
 
-    private (int, int) CheckSolution(int currATimes, int currBTimes)
+    private (BigInteger, BigInteger) CheckSolution(BigInteger currATimes, BigInteger currBTimes)
     {
         // I think something is wrong with my base cases here; I shouldn't need this dict
         if (dict.ContainsKey((currATimes, currBTimes)))
         {
-            return (int.MaxValue, int.MaxValue);
+            return (-1, -1);
         }
         dict.Add((currATimes, currBTimes), true);
-        if (currATimes == int.MaxValue || currATimes > 100 || currBTimes > 100)
+        if (currATimes == -1 || currATimes > 100 || currBTimes > 100)
         {
-            return (int.MaxValue, int.MaxValue);
+            return (-1, -1);
         }
         var currX = A.XDelta * currATimes + B.XDelta * currBTimes;
         var currY = A.YDelta * currATimes + B.YDelta * currBTimes;
@@ -42,7 +44,7 @@
         if (currX > PrizeX || currY > PrizeY)
         {
             // Console.WriteLine("Exceed");
-            return (int.MaxValue, int.MaxValue);
+            return (-1, -1);
         }
         if (currX == PrizeX && currY == PrizeY)
         {
@@ -55,13 +57,13 @@
         }
         var increaseASol = CheckSolution(currATimes + 1, currBTimes);
         var increaseBSol = CheckSolution(currATimes, currBTimes + 1);
-        if (increaseASol.Item1 == int.MaxValue && increaseBSol.Item2 == int.MaxValue)
+        if (increaseASol.Item1 == -1 && increaseBSol.Item2 == -1)
         {
             // Console.WriteLine("both sols were invalid");
-            return (int.MaxValue, int.MaxValue);
+            return (-1, -1);
         }
         // else one of them is a solution
-        if (increaseASol.Item1 != int.MaxValue && increaseBSol.Item1 != int.MaxValue)
+        if (increaseASol.Item1 != -1 && increaseBSol.Item1 != -1)
         {
             // they are both solutions
             var costA = increaseASol.Item1 * CostA + increaseASol.Item2 * CostB;
@@ -72,11 +74,11 @@
             }
             return increaseBSol;
         }
-        else if (increaseASol.Item1 != int.MaxValue)
+        else if (increaseASol.Item1 != -1)
         {
             return increaseASol;
         }
-        else// if (increaseBSol.Item1 != int.MaxValue)
+        else// if (increaseBSol.Item1 != -1)
         {
             return increaseBSol;
         }
@@ -88,15 +90,15 @@
         {
             SolutionCache = CheckSolution(0, 0);
         }
-        return SolutionCache.Item1 != int.MaxValue;
+        return SolutionCache.Item1 != -1;
     }
 
-    public (int, int) GetLeastCostSolution()
+    public (BigInteger, BigInteger) GetLeastCostSolution()
     {
         return SolutionCache;
     }
 
-    public int GetLeastCost()
+    public BigInteger GetLeastCost()
     {
         return SolutionCache.Item1 * CostA + SolutionCache.Item2 * CostB;
     }
