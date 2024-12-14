@@ -10,6 +10,8 @@ class Machine
     public const int CostA = 3;
     public const int CostB = 1;
 
+    private bool IsPart2 = false;
+
     public Machine(Button a, Button b, BigInteger x, BigInteger y, bool isPart2 = false)
     {
         A = a;
@@ -18,6 +20,7 @@ class Machine
         PrizeY = y + (isPart2 ? 10000000000000 : 0);
         SolutionCache = (-1, -1);
         dict = new Dictionary<(BigInteger, BigInteger), bool>();
+        IsPart2 = isPart2;
     }
 
     private (BigInteger, BigInteger) SolutionCache;
@@ -26,13 +29,13 @@ class Machine
 
     private (BigInteger, BigInteger) CheckSolution(BigInteger currATimes, BigInteger currBTimes)
     {
-        // I think something is wrong with my base cases here; I shouldn't need this dict
+        // Use dict for cache as we will hit same cases multiple times
         if (dict.ContainsKey((currATimes, currBTimes)))
         {
             return (-1, -1);
         }
         dict.Add((currATimes, currBTimes), true);
-        if (currATimes == -1 || currATimes > 100 || currBTimes > 100)
+        if (currATimes == -1 || (!IsPart2 && (currATimes > 100 || currBTimes > 100)))
         {
             return (-1, -1);
         }
@@ -43,17 +46,12 @@ class Machine
         //Console.WriteLine("      B.XDelta = {0}, B.YDelta = {1}", B.XDelta, B.YDelta);
         if (currX > PrizeX || currY > PrizeY)
         {
-            // Console.WriteLine("Exceed");
             return (-1, -1);
         }
         if (currX == PrizeX && currY == PrizeY)
         {
             // Console.WriteLine("SOLVE");
             return (currATimes, currBTimes);
-        }
-        if (currX < PrizeX && currY < PrizeY)
-        {
-
         }
         var increaseASol = CheckSolution(currATimes + 1, currBTimes);
         var increaseBSol = CheckSolution(currATimes, currBTimes + 1);

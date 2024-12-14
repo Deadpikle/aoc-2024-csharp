@@ -33,7 +33,7 @@ foreach (var line in fileLines)
         }
         else if (line.StartsWith("Prize:"))
         {
-            var machine = new Machine(tmpButtonA!, tmpButtonB!, x, y, false);
+            var machine = new Machine(tmpButtonA!, tmpButtonB!, x, y, true);
             if (machine.IsSolvable())
             {
                 machines.Add(machine);
