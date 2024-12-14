@@ -191,8 +191,7 @@ string GetMap()
     }
     return output;
 }
-var mapStrings = "";
-var nextTree = 99;
+var nextPotentialTree = 99;
 for (var i = 0; i < 100000; i++)
 {
     // move robots
@@ -221,17 +220,23 @@ for (var i = 0; i < 100000; i++)
         robot.Y = nextY;
     }
 
-    if (i + 1 == nextTree)
+    if (i + 1 == nextPotentialTree)
     {
-        Console.WriteLine("After {0} seconds:", i + 1);
-        mapStrings += string.Format("After {0} seconds:", i + 1);
-        mapStrings += Environment.NewLine;
-        mapStrings += GetMap();
-        mapStrings += Environment.NewLine;
-        mapStrings += Environment.NewLine;
-        nextTree += 101; // magic number for my input
+        // Console.WriteLine("After {0} seconds:", i + 1);
+        //mapStrings += string.Format("After {0} seconds:", i + 1);
+        //mapStrings += Environment.NewLine;
+        //mapStrings += GetMap();
+        //mapStrings += Environment.NewLine;
+        //mapStrings += Environment.NewLine;
+        nextPotentialTree += 101; // magic number (?) for my input
+        var str = GetMap();
+        if (str.Contains("1111111111")) // figured this out by looking at a real tree in my console after finding manually
+        {
+            Console.WriteLine("Tree at second: {0}", i+1);
+            Draw();
+            break;
+        }
     }
     // This will draw them easy enough for manual verification, however,
     // technically, now that we know what it looks like, we COULD find it via code
 }
-File.WriteAllText("output.txt", mapStrings);
