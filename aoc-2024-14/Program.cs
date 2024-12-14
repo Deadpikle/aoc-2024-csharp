@@ -236,6 +236,14 @@ for (var i = 0; i < 100000; i++)
             Draw();
             break;
         }
+        // To be clear about my process, which is not reflected in git history:
+        // 1) Printed out every map for first thousand iterations or so
+        // 2) Noticed that every X iterations the robots converged
+        // 3) Printed out every X iterations 10,000 times or so
+        // 4) Looked at the file to find the tree
+        // 5) Manually find first tree
+        // 6) Submit successful part 2 (after being reminded online to reset robots by others...)
+        // 7) Re-code this to have code find first tree
     }
     // This will draw them easy enough for manual verification, however,
     // technically, now that we know what it looks like, we COULD find it via code
