@@ -142,7 +142,6 @@ foreach (var dir in directions)
     {
         continue; // should be fixed by Trim() call above but just to be safe...
     }
-    Console.WriteLine("Moving {0}", dir);
     (var deltaX, var deltaY) = GetDeltaFromChar(dir);
     var nextCh = map[robotY + deltaY][robotX + deltaX];
     if (nextCh == '#')
@@ -182,6 +181,7 @@ for (var y = 0; y < map.Count; y++)
 }
 Console.WriteLine("GPS total Part 1: {0}", total);
 // Part 2
+// Recreate map with 2x size
 map = new List<char[]>();
 foreach (var line in fileLines)
 {
@@ -223,6 +223,9 @@ foreach (var line in fileLines)
         map.Add(chLine);
     }
 }
+
+Console.WriteLine("------------------");
+
 Console.WriteLine("Before start Part 2:");
 Console.WriteLine(GetMapStr(map));
 
@@ -329,6 +332,8 @@ foreach (var dir in directions)
     // Console.WriteLine("After move:");
     // Console.WriteLine(GetMapStr(map));
 }
+Console.WriteLine("After Part 2:");
+Console.WriteLine(GetMapStr(map));
 // now get total
 total = 0;
 for (var y = 0; y < map.Count; y++)
