@@ -99,22 +99,45 @@ void PrintMapWithVisited(Dictionary<(int, int), bool> dict)
     }
 }
 
+char GetNext(int x, int y, char dir)
+{
+    if (dir == '>')
+    {
+        return map[y][x + 1];
+    }
+    if (dir == '<')
+    {
+        return map[y][x - 1];
+    }
+    if (dir == 'v')
+    {
+        return map[y + 1][x];
+    }
+    if (dir == '^')
+    {
+        return map[y - 1][x];
+    }
+    return '0';
+}
+
+// THIS IS VERY SLOW FOR THE BIG MAZE AND NOT OPTIMIZED BUT TECHNICALLY IT WORKS
 var currentBestScore = long.MaxValue;
 var bestPaths = new List<Dictionary<(int, int), bool>>();
-long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, int score, int steps, int turns, Dictionary<(int, int), bool> visitedThisPath, Dictionary<(int, int), long> locationScores)
+long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, int score, int steps, int turns, Dictionary<(int, int), bool> visitedThisPath, Dictionary<(int, int, char), long> locationScores)
 {
     if (currX == endX && currY == endY)
     {
         visitedThisPath.Add((currX, currY), true); // add end tile for length calculations
-        Console.WriteLine("   Score is {0}; steps is {1}, turns is {2}", score, steps, turns);
         if (score < currentBestScore)
         {
+            Console.WriteLine("   New Score is {0}; steps is {1}, turns is {2}", score, steps, turns);
             currentBestScore = score;
             bestPaths.Clear();
             bestPaths.Add(new Dictionary<(int, int), bool>(visitedThisPath));
         }
         else if (score == currentBestScore)
         {
+            Console.WriteLine("   Matching Score is {0}; steps is {1}, turns is {2}", score, steps, turns);
             bestPaths.Add(new Dictionary<(int, int), bool>(visitedThisPath));
         }
         return score; // we got to the end!
@@ -124,23 +147,22 @@ long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, in
         return long.MaxValue;
     }
     visitedThisPath.Add((currX, currY), true);
-    if (locationScores.ContainsKey((currX, currY)) && score > locationScores[(currX, currY)] + 1000 /* include rotation offset */)
+    if (locationScores.ContainsKey((currX, currY, direction)) && score > locationScores[(currX, currY, direction)])
     {
-        // Console.WriteLine("Conflict at {0}, {1}: {2} vs {3}", currX, currY, score, locationScores[(currX, currY)]);
-        return long.MaxValue; // this way isn't worth it, we can get here more cheaply!
+        return long.MaxValue;
     }
     var currSpot = map[currY][currX];
     if (currSpot == '#')
     {
         return long.MaxValue; // we walked onto a wall. good job.
     }
-    if (!locationScores.ContainsKey((currX, currY)))
+    if (!locationScores.ContainsKey((currX, currY, direction)))
     {
-        locationScores.Add((currX, currY), score);
+        locationScores.Add((currX, currY, direction), score);
     }
     else
     {
-        locationScores[(currX, currY)] = score;
+        locationScores[(currX, currY, direction)] = score;
     }
     // Console.WriteLine("At: {0}, {1}: {2}; Steps: {3}, Turns: {4}", currX, currY, currSpot, steps, turns);
     // try moving all four directions and recurse
@@ -164,7 +186,7 @@ long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, in
     }.Min();
 }
 var visited = new Dictionary<(int, int), bool>();
-var score = GetLengthToEnd(startX, startY, exitX, exitY, '>', 0, 0, 0, visited, new Dictionary<(int, int), long>());
+var score = GetLengthToEnd(startX, startY, exitX, exitY, '>', 0, 0, 0, visited, new Dictionary<(int, int, char), long>());
 Console.WriteLine("Score part 1: {0}", score);
 
 var allBestPathSpots = new Dictionary<(int, int), bool>();
