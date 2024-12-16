@@ -1,4 +1,4 @@
-﻿var fileLines = File.ReadAllLines("example.txt");
+﻿var fileLines = File.ReadAllLines("input.txt");
 
 var startX = 0;
 var startY = 0;
@@ -87,13 +87,25 @@ bool CanMoveDirection(char from, char to)
     return true;
 }
 
+void PrintMapWithVisited(Dictionary<(int, int), bool> dict)
+{
+    for (var y = 0; y < map.Count; y++)
+    {
+        for (var x = 0; x < map[0].Length; x++)
+        {
+            Console.Write("{0}", dict.ContainsKey((x, y)) && map[y][x] != '#' ? 'O' : map[y][x]);
+        }
+        Console.WriteLine();
+    }
+}
+
 var currentBestScore = long.MaxValue;
 var bestPaths = new List<Dictionary<(int, int), bool>>();
 long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, int score, int steps, int turns, Dictionary<(int, int), bool> visitedThisPath, Dictionary<(int, int), long> locationScores)
 {
     if (currX == endX && currY == endY)
     {
-        visitedThisPath.Add((currX, currY), true); // add end tile
+        visitedThisPath.Add((currX, currY), true); // add end tile for length calculations
         Console.WriteLine("   Score is {0}; steps is {1}, turns is {2}", score, steps, turns);
         if (score < currentBestScore)
         {
@@ -112,9 +124,9 @@ long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, in
         return long.MaxValue;
     }
     visitedThisPath.Add((currX, currY), true);
-    if (locationScores.ContainsKey((currX, currY)) && score > locationScores[(currX, currY)])
+    if (locationScores.ContainsKey((currX, currY)) && score > locationScores[(currX, currY)] + 1000 /* include rotation offset */)
     {
-        Console.WriteLine("Conflict at {0}, {1}: {2} vs {3}", currX, currY, score, locationScores[(currX, currY)]);
+        // Console.WriteLine("Conflict at {0}, {1}: {2} vs {3}", currX, currY, score, locationScores[(currX, currY)]);
         return long.MaxValue; // this way isn't worth it, we can get here more cheaply!
     }
     var currSpot = map[currY][currX];
@@ -168,11 +180,11 @@ foreach (var spots in bestPaths)
 }
 Console.WriteLine("Best score: {0}", currentBestScore);
 Console.WriteLine("Most tiles: {0}", allBestPathSpots.Count);
-for (var y = 0; y < map.Count; y++)
-{
-    for (var x = 0; x < map[0].Length; x++)
-    {
-        Console.Write("{0}", allBestPathSpots.ContainsKey((x, y)) && map[y][x] != '#' ? 'O' : map[y][x]);
-    }
-    Console.WriteLine();
-}
+// for (var y = 0; y < map.Count; y++)
+// {
+//     for (var x = 0; x < map[0].Length; x++)
+//     {
+//         Console.Write("{0}", allBestPathSpots.ContainsKey((x, y)) && map[y][x] != '#' ? 'O' : map[y][x]);
+//     }
+//     Console.WriteLine();
+// }
