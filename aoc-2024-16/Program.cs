@@ -122,7 +122,7 @@ char GetNext(int x, int y, char dir)
 
 var currentBestScore = long.MaxValue;
 var bestPaths = new LinkedList<Dictionary<(int, int), bool>>();
-long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, int score, int steps, int turns, Dictionary<(int, int), bool> visitedThisPath, Dictionary<(int, int, char), long> locationScores)
+long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, int score, Dictionary<(int, int), bool> visitedThisPath, Dictionary<(int, int, char), long> locationScores)
 {
     if (score > currentBestScore)
     {
@@ -133,7 +133,7 @@ long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, in
         visitedThisPath.Add((currX, currY), true); // add end tile for length calculations
         if (score < currentBestScore)
         {
-            Console.WriteLine("   New Score is {0}; steps is {1}, turns is {2}", score, steps, turns);
+            Console.WriteLine("   New Score is {0}", score);
             currentBestScore = score;
             bestPaths.Clear();
             bestPaths.AddLast(new Dictionary<(int, int), bool>(visitedThisPath));
@@ -169,28 +169,32 @@ long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, in
     }
     // Console.WriteLine("At: {0}, {1}: {2}; Steps: {3}, Turns: {4}", currX, currY, currSpot, steps, turns);
     // try moving all four directions and recurse
+    var nextLeftScore = score + 1 + 1000 * GetRotations(direction, '<');
+    var nextRightScore = score + 1 + 1000 * GetRotations(direction, '>');
+    var nextUpScore = score + 1 + 1000 * GetRotations(direction, '^');
+    var nextDownScore = score + 1 + 1000 * GetRotations(direction, 'v');
     return new long[] {
         // left
-        direction != '>' && map[currY][currX - 1] != '#' && !visitedThisPath.ContainsKey((currX - 1, currY))
-            ? GetLengthToEnd(currX - 1, currY, endX, endY, '<', score + 1 + 1000 * GetRotations(direction, '<'), steps + 1, turns + GetRotations(direction, '<'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores) 
+        direction != '>' && map[currY][currX - 1] != '#' && !visitedThisPath.ContainsKey((currX - 1, currY)) && nextLeftScore <= currentBestScore
+            ? GetLengthToEnd(currX - 1, currY, endX, endY, '<', nextLeftScore, new Dictionary<(int, int), bool>(visitedThisPath), locationScores) 
             : long.MaxValue,
         // right
-        direction != '<' && map[currY][currX + 1] != '#'  && !visitedThisPath.ContainsKey((currX + 1, currY))
-            ? GetLengthToEnd(currX + 1, currY, endX, endY, '>', score + 1 + 1000 * GetRotations(direction, '>'), steps + 1, turns + GetRotations(direction, '>'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
+        direction != '<' && map[currY][currX + 1] != '#'  && !visitedThisPath.ContainsKey((currX + 1, currY)) && nextRightScore <= currentBestScore
+            ? GetLengthToEnd(currX + 1, currY, endX, endY, '>', nextRightScore, new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
             : long.MaxValue,
         // up
-        direction != 'v' && map[currY - 1][currX] != '#' && !visitedThisPath.ContainsKey((currX, currY - 1))
-            ? GetLengthToEnd(currX, currY - 1, endX, endY, '^', score + 1 + 1000 * GetRotations(direction, '^'), steps + 1, turns + GetRotations(direction, '^'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
+        direction != 'v' && map[currY - 1][currX] != '#' && !visitedThisPath.ContainsKey((currX, currY - 1)) && nextUpScore <= currentBestScore
+            ? GetLengthToEnd(currX, currY - 1, endX, endY, '^', nextUpScore, new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
             : long.MaxValue,
         // down
-        direction != '^' && map[currY + 1][currX] != '#' && !visitedThisPath.ContainsKey((currX, currY + 1))
-            ? GetLengthToEnd(currX, currY + 1, endX, endY, 'v', score + 1 + 1000 * GetRotations(direction, 'v'), steps + 1, turns + GetRotations(direction, 'v'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
+        direction != '^' && map[currY + 1][currX] != '#' && !visitedThisPath.ContainsKey((currX, currY + 1)) && nextDownScore <= currentBestScore
+            ? GetLengthToEnd(currX, currY + 1, endX, endY, 'v', nextDownScore, new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
             : long.MaxValue,
     }.Min();
 }
 var watch = System.Diagnostics.Stopwatch.StartNew();
 var visited = new Dictionary<(int, int), bool>();
-var score = GetLengthToEnd(startX, startY, exitX, exitY, '>', 0, 0, 0, visited, new Dictionary<(int, int, char), long>());
+var score = GetLengthToEnd(startX, startY, exitX, exitY, '>', 0, visited, new Dictionary<(int, int, char), long>());
 Console.WriteLine("Score part 1: {0}", score);
 
 var allBestPathSpots = new Dictionary<(int, int), bool>();
