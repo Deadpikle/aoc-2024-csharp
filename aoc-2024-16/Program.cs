@@ -117,7 +117,7 @@ char GetNext(int x, int y, char dir)
     {
         return map[y - 1][x];
     }
-    return '0';
+    return ' ';
 }
 
 // THIS IS VERY SLOW FOR THE BIG MAZE AND NOT OPTIMIZED BUT TECHNICALLY IT WORKS
@@ -125,6 +125,10 @@ var currentBestScore = long.MaxValue;
 var bestPaths = new List<Dictionary<(int, int), bool>>();
 long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, int score, int steps, int turns, Dictionary<(int, int), bool> visitedThisPath, Dictionary<(int, int, char), long> locationScores)
 {
+    if (currentBestScore != long.MaxValue && score > currentBestScore)
+    {
+        return long.MaxValue;
+    }
     if (currX == endX && currY == endY)
     {
         visitedThisPath.Add((currX, currY), true); // add end tile for length calculations
@@ -168,19 +172,19 @@ long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, in
     // try moving all four directions and recurse
     return new long[] {
         // left
-        CanMoveDirection(direction, '<') 
+        CanMoveDirection(direction, '<') && GetNext(currX, currY, '<') != '#' && !visitedThisPath.ContainsKey((currX - 1, currY))
             ? GetLengthToEnd(currX - 1, currY, endX, endY, '<', score + 1 + 1000 * GetRotations(direction, '<'), steps + 1, turns + GetRotations(direction, '<'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores) 
             : long.MaxValue,
         // right
-        CanMoveDirection(direction, '>') 
+        CanMoveDirection(direction, '>') && GetNext(currX, currY, '>') != '#'  && !visitedThisPath.ContainsKey((currX + 1, currY))
             ? GetLengthToEnd(currX + 1, currY, endX, endY, '>', score + 1 + 1000 * GetRotations(direction, '>'), steps + 1, turns + GetRotations(direction, '>'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
             : long.MaxValue,
         // up
-        CanMoveDirection(direction, '^') 
+        CanMoveDirection(direction, '^')  && GetNext(currX, currY, '^') != '#' && !visitedThisPath.ContainsKey((currX, currY - 1))
             ? GetLengthToEnd(currX, currY - 1, endX, endY, '^', score + 1 + 1000 * GetRotations(direction, '^'), steps + 1, turns + GetRotations(direction, '^'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
             : long.MaxValue,
         // down
-        CanMoveDirection(direction, 'v') 
+        CanMoveDirection(direction, 'v') && GetNext(currX, currY, 'v') != '#' && !visitedThisPath.ContainsKey((currX, currY + 1))
             ? GetLengthToEnd(currX, currY + 1, endX, endY, 'v', score + 1 + 1000 * GetRotations(direction, 'v'), steps + 1, turns + GetRotations(direction, 'v'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
             : long.MaxValue,
     }.Min();
