@@ -18,7 +18,6 @@ long regA = originalRegA;
 long regB = originalRegB;
 long regC = originalRegC;
 var instructions = lines.Last().Split("Program: ")[1].Split(",").Select(int.Parse).ToList();
-var instructionPtr = 0;
 
 bool CheckMatch(List<int> original, List<long> toCheck)
 {
@@ -48,6 +47,7 @@ while (true)
     regA = isPartTwo ? regAStartVal : regA;
     regB = originalRegB;
     regC = originalRegC;
+    var instructionPtr = 0;
     if (regA % 100000000 == 0)
     {
         Console.WriteLine("Reg A start val = {0:n0}; B = {1}, C = {2}", regA, regB, regC);
@@ -116,7 +116,6 @@ while (true)
                 instructionPtr += 2;
             break;
             case 2: // bst - combo operand modulo 8 (only keeps lowest 3 bits), result -> B
-                // var bstResult = comboOperand % 8;
                 var bstResult = comboOperand & 0x7;
                 regB = bstResult;
                 instructionPtr += 2;
@@ -137,7 +136,6 @@ while (true)
                 instructionPtr += 2;
             break;
             case 5: // out - val of combo operand modulo 8, outputs value (sep. by comma)
-                // var nextVal = comboOperand % 8;
                 var nextVal = comboOperand & 0x7;
                 if (isPartTwo && instructions[output.Count] != nextVal)
                 {
@@ -172,7 +170,6 @@ while (true)
     else
     {
         regAStartVal++;
-        instructionPtr = 0;
         output.Clear();
     }
 }
