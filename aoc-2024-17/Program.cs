@@ -9,7 +9,7 @@ List<int> GetNums(string str)
     return matchCollection.Select(x => int.Parse(x.Value)).ToList();
 }
 
-var lines = File.ReadAllLines("input.txt");
+var lines = File.ReadAllLines("example2.txt");
 
 var originalRegA = GetNums(lines[0])[0];
 var originalRegB = GetNums(lines[1])[0];
@@ -38,7 +38,7 @@ long GetComboOperator(int operand)
     }
 }
 
-bool CheckMatch(List<int> original, List<int> toCheck)
+bool CheckMatch(List<int> original, List<long> toCheck)
 {
     if (original.Count != toCheck.Count)
     {
@@ -55,7 +55,7 @@ bool CheckMatch(List<int> original, List<int> toCheck)
 }
 
 var done = false;
-var output = new List<string>();
+var output = new List<long>();
 
 bool isPartTwo = true;
 long regAStartVal = isPartTwo ? 0 : regA;
@@ -66,7 +66,7 @@ while (true)
     regA = isPartTwo ? regAStartVal : regA;
     regB = originalRegB;
     regC = originalRegC;
-    if (regA % 100000 == 0)
+    if (regA % 1000000 == 0)
     {
         Console.WriteLine("Reg A start val = {0}; B = {1}, C = {2}", regA, regB, regC);
     }
@@ -79,8 +79,23 @@ while (true)
         var opcode = instructions[instructionPtr];
         var operand = instructionPtr < instructions.Count - 1 ? instructions[instructionPtr + 1] : 0; // hmmm
 
-        var comboOperand = GetComboOperator(operand);
-
+        long comboOperand = operand;
+        switch (operand)
+        {
+            case 4:
+            comboOperand = regA;
+            break;
+            case 5:
+            comboOperand = regB;
+            break;
+            case 6:
+            comboOperand = regB;
+            break;
+            case 7:
+            comboOperand = 0;
+            break;
+        }
+        var isPartTwoFailure = false;
         switch (opcode)
         {
             case 0: // adv - division, numerator = A.val, denominator = 2^operand -> truncate to integer and write to A
@@ -116,13 +131,13 @@ while (true)
             break;
             case 5: // out - val of combo operand modulo 8, outputs value (sep. by comma)
                 var nextVal = comboOperand % 8;
-                var nextNum = string.Format("{0}", nextVal);
-                output.Add(nextNum);
-                instructionPtr += 2;
-                if (isPartTwo && instructions[output.Count - 1] != nextVal)
+                if (isPartTwo && instructions[output.Count] != nextVal)
                 {
-                    break; // we failed
+                    isPartTwoFailure = true;
+                    break; // we failed part 2
                 }
+                instructionPtr += 2;
+                output.Add(nextVal);
             break;
             case 6: // bdv - exactly like case 0 but result into B
                 var bdvResult = Math.Floor(regA / Math.Pow(2, comboOperand));
@@ -137,6 +152,10 @@ while (true)
             default:
             break;
         }
+        if (isPartTwo && isPartTwoFailure)
+        {
+            break;
+        }
     }
     if (!isPartTwo)
     {
@@ -146,7 +165,7 @@ while (true)
     //     string.Join(",", instructions), 
     //     string.Join(",", output.Select(int.Parse).ToList()), 
     //     output.Count);
-    if (CheckMatch(instructions, output.Select(int.Parse).ToList()))
+    if (CheckMatch(instructions, output))
     {
         // got it!
         Console.WriteLine("Found match at {0}", regAStartVal);
