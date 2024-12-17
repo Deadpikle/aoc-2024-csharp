@@ -9,7 +9,7 @@ List<int> GetNums(string str)
     return matchCollection.Select(x => int.Parse(x.Value)).ToList();
 }
 
-var lines = File.ReadAllLines("input.txt");
+var lines = File.ReadAllLines("example2.txt");
 
 var originalRegA = GetNums(lines[0])[0];
 var originalRegB = GetNums(lines[1])[0];
@@ -112,28 +112,18 @@ while (true)
                 instructionPtr += 2;
             break;
             case 1: // bxl - bitwise XOR of B and literal operand; result -> B
-                var bxlResult = regB ^ operand;
-                regB = bxlResult;
+                regB = regB ^ operand;
                 instructionPtr += 2;
             break;
             case 2: // bst - combo operand modulo 8 (only keeps lowest 3 bits), result -> B
-                var bstResult = comboOperand & 0x7;
-                regB = bstResult;
+                regB = comboOperand & 0x7;
                 instructionPtr += 2;
             break;
             case 3: // jnz - if A == 0, nothing. A not zero, jumps to literal operand number (and doesn't add 2 after)
-                if (regA != 0)
-                {
-                    instructionPtr = operand;
-                }
-                else 
-                {
-                    instructionPtr += 2;
-                }
+                instructionPtr = regA != 0 ? operand : instructionPtr + 2;
             break;
             case 4: // bxc - bitwise XOR of B and C, result -> B. Reads operand but IGNORES it.
-                var bxcResult = regB ^ regC;
-                regB = bxcResult;
+                regB = regB ^ regC;
                 instructionPtr += 2;
             break;
             case 5: // out - val of combo operand modulo 8, outputs value (sep. by comma)
