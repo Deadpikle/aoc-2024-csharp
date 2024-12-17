@@ -19,22 +19,6 @@ long regB = originalRegB;
 long regC = originalRegC;
 var instructions = lines.Last().Split("Program: ")[1].Split(",").Select(int.Parse).ToList();
 
-bool CheckMatch(List<int> original, List<long> toCheck)
-{
-    if (original.Count != toCheck.Count)
-    {
-        return false;
-    }
-    for (var i = 0; i < original.Count; i++)
-    {
-        if (original[i] != toCheck[i])
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
 var done = false;
 var output = new List<long>();
 
@@ -52,6 +36,7 @@ while (true)
     {
         Console.WriteLine("Reg A start val = {0:n0}; B = {1}, C = {2}", regA, regB, regC);
     }
+    var isPartTwoFailure = false;
     while (!done)
     {
         if (instructionPtr >= instructions.Count)
@@ -78,7 +63,6 @@ while (true)
             comboOperand = 0;
             break;
         }
-        var isPartTwoFailure = false;
         switch (opcode)
         {
             case 0: // adv - division, numerator = A.val, denominator = 2^operand -> truncate to integer and write to A
@@ -148,11 +132,12 @@ while (true)
     {
         break;
     }
-    // Console.WriteLine("{0} vs {1} ({2})", 
-    //     string.Join(",", instructions), 
-    //     string.Join(",", output.Select(int.Parse).ToList()), 
-    //     output.Count);
-    if (CheckMatch(instructions, output))
+    //Console.WriteLine("{0} vs {1} ({2}) - failed? {3}", 
+    //    string.Join(",", instructions), 
+    //    string.Join(",", output), 
+    //    output.Count, 
+    //    isPartTwoFailure);
+    if (!isPartTwoFailure && instructions.Count == output.Count)
     {
         // got it!
         Console.WriteLine("Found match at {0}", regAStartVal);
