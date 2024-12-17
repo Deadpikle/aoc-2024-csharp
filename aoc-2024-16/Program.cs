@@ -188,6 +188,7 @@ long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, in
             : long.MaxValue,
     }.Min();
 }
+var watch = System.Diagnostics.Stopwatch.StartNew();
 var visited = new Dictionary<(int, int), bool>();
 var score = GetLengthToEnd(startX, startY, exitX, exitY, '>', 0, 0, 0, visited, new Dictionary<(int, int, char), long>());
 Console.WriteLine("Score part 1: {0}", score);
@@ -203,8 +204,10 @@ foreach (var spots in bestPaths)
         }
     }
 }
+watch.Stop();
 Console.WriteLine("Best score: {0}", currentBestScore);
 Console.WriteLine("Most tiles: {0}", allBestPathSpots.Count);
+Console.WriteLine("Time: {0}ms", watch.ElapsedMilliseconds);
 // for (var y = 0; y < map.Count; y++)
 // {
 //     for (var x = 0; x < map[0].Length; x++)
