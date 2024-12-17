@@ -9,7 +9,7 @@ List<int> GetNums(string str)
     return matchCollection.Select(x => int.Parse(x.Value)).ToList();
 }
 
-var lines = File.ReadAllLines("example2.txt");
+var lines = File.ReadAllLines("input.txt");
 
 var originalRegA = GetNums(lines[0])[0];
 var originalRegB = GetNums(lines[1])[0];
@@ -20,7 +20,7 @@ long regC = originalRegC;
 var instructions = lines.Last().Split("Program: ")[1].Split(",").Select(int.Parse).ToList();
 
 var done = false;
-var output = new List<long>();
+var output = new LinkedList<long>();
 
 bool isPartTwo = true;
 long regAStartVal = isPartTwo ? 0 : regA;
@@ -118,7 +118,7 @@ while (true)
                     break; // we failed part 2
                 }
                 instructionPtr += 2;
-                output.Add(nextVal);
+                output.AddLast(nextVal);
             break;
             default:
             break;
