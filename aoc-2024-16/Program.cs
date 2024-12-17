@@ -121,7 +121,7 @@ char GetNext(int x, int y, char dir)
 }
 
 var currentBestScore = long.MaxValue;
-var bestPaths = new List<Dictionary<(int, int), bool>>();
+var bestPaths = new LinkedList<Dictionary<(int, int), bool>>();
 long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, int score, int steps, int turns, Dictionary<(int, int), bool> visitedThisPath, Dictionary<(int, int, char), long> locationScores)
 {
     if (currentBestScore != long.MaxValue && score > currentBestScore)
@@ -136,19 +136,19 @@ long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, in
             Console.WriteLine("   New Score is {0}; steps is {1}, turns is {2}", score, steps, turns);
             currentBestScore = score;
             bestPaths.Clear();
-            bestPaths.Add(new Dictionary<(int, int), bool>(visitedThisPath));
+            bestPaths.AddLast(new Dictionary<(int, int), bool>(visitedThisPath));
         }
         else if (score == currentBestScore)
         {
-            Console.WriteLine("   Matching Score is {0}; steps is {1}, turns is {2}", score, steps, turns);
-            bestPaths.Add(new Dictionary<(int, int), bool>(visitedThisPath));
+            // Console.WriteLine("   Matching Score is {0}; steps is {1}, turns is {2}", score, steps, turns);
+            bestPaths.AddLast(new Dictionary<(int, int), bool>(visitedThisPath));
         }
         return score; // we got to the end!
     }
-    if (visitedThisPath.ContainsKey((currX, currY))) // only visit each tile 1x
-    {
-        return long.MaxValue;
-    }
+    //if (visitedThisPath.ContainsKey((currX, currY))) // only visit each tile 1x
+    //{
+    //    return long.MaxValue;
+    //}
     visitedThisPath.Add((currX, currY), true);
     if (locationScores.ContainsKey((currX, currY, direction)) && score > locationScores[(currX, currY, direction)])
     {
@@ -171,19 +171,19 @@ long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, in
     // try moving all four directions and recurse
     return new long[] {
         // left
-        CanMoveDirection(direction, '<') && GetNext(currX, currY, '<') != '#' && !visitedThisPath.ContainsKey((currX - 1, currY))
+        direction != '>' && map[currY][currX - 1] != '#' && !visitedThisPath.ContainsKey((currX - 1, currY))
             ? GetLengthToEnd(currX - 1, currY, endX, endY, '<', score + 1 + 1000 * GetRotations(direction, '<'), steps + 1, turns + GetRotations(direction, '<'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores) 
             : long.MaxValue,
         // right
-        CanMoveDirection(direction, '>') && GetNext(currX, currY, '>') != '#'  && !visitedThisPath.ContainsKey((currX + 1, currY))
+        direction != '<' && map[currY][currX + 1] != '#'  && !visitedThisPath.ContainsKey((currX + 1, currY))
             ? GetLengthToEnd(currX + 1, currY, endX, endY, '>', score + 1 + 1000 * GetRotations(direction, '>'), steps + 1, turns + GetRotations(direction, '>'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
             : long.MaxValue,
         // up
-        CanMoveDirection(direction, '^')  && GetNext(currX, currY, '^') != '#' && !visitedThisPath.ContainsKey((currX, currY - 1))
+        direction != 'v' && map[currY - 1][currX] != '#' && !visitedThisPath.ContainsKey((currX, currY - 1))
             ? GetLengthToEnd(currX, currY - 1, endX, endY, '^', score + 1 + 1000 * GetRotations(direction, '^'), steps + 1, turns + GetRotations(direction, '^'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
             : long.MaxValue,
         // down
-        CanMoveDirection(direction, 'v') && GetNext(currX, currY, 'v') != '#' && !visitedThisPath.ContainsKey((currX, currY + 1))
+        direction != '^' && map[currY + 1][currX] != '#' && !visitedThisPath.ContainsKey((currX, currY + 1))
             ? GetLengthToEnd(currX, currY + 1, endX, endY, 'v', score + 1 + 1000 * GetRotations(direction, 'v'), steps + 1, turns + GetRotations(direction, 'v'), new Dictionary<(int, int), bool>(visitedThisPath), locationScores)
             : long.MaxValue,
     }.Min();
