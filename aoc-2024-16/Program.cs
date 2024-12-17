@@ -124,7 +124,7 @@ var currentBestScore = long.MaxValue;
 var bestPaths = new LinkedList<Dictionary<(int, int), bool>>();
 long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, int score, int steps, int turns, Dictionary<(int, int), bool> visitedThisPath, Dictionary<(int, int, char), long> locationScores)
 {
-    if (currentBestScore != long.MaxValue && score > currentBestScore)
+    if (score > currentBestScore)
     {
         return long.MaxValue;
     }
