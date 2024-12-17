@@ -11,14 +11,17 @@ List<int> GetNums(string str)
 
 var lines = File.ReadAllLines("input.txt");
 
-var regA = GetNums(lines[0])[0];
-var regB = GetNums(lines[1])[0];
-var regC = GetNums(lines[2])[0];
+var originalRegA = GetNums(lines[0])[0];
+var originalRegB = GetNums(lines[1])[0];
+var originalRegC = GetNums(lines[2])[0];
+long regA = originalRegA;
+long regB = originalRegB;
+long regC = originalRegC;
 var instructions = lines.Last().Split("Program: ")[1].Split(",").Select(int.Parse).ToList();
 var instructionPtr = 0;
 
 
-int GetComboOperator(int operand)
+long GetComboOperator(int operand)
 {
     switch (operand)
     {
@@ -35,68 +38,126 @@ int GetComboOperator(int operand)
     }
 }
 
+bool CheckMatch(List<int> original, List<int> toCheck)
+{
+    if (original.Count != toCheck.Count)
+    {
+        return false;
+    }
+    for (var i = 0; i < original.Count; i++)
+    {
+        if (original[i] != toCheck[i])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 var done = false;
 var output = new List<string>();
-while (!done)
+
+bool isPartTwo = true;
+long regAStartVal = isPartTwo ? 0 : regA;
+
+while (true)
 {
-    if (instructionPtr >= instructions.Count)
+    // run program
+    regA = isPartTwo ? regAStartVal : regA;
+    regB = originalRegB;
+    regC = originalRegC;
+    if (regA % 100000 == 0)
+    {
+        Console.WriteLine("Reg A start val = {0}; B = {1}, C = {2}", regA, regB, regC);
+    }
+    while (!done)
+    {
+        if (instructionPtr >= instructions.Count)
+        {
+            break;
+        }
+        var opcode = instructions[instructionPtr];
+        var operand = instructionPtr < instructions.Count - 1 ? instructions[instructionPtr + 1] : 0; // hmmm
+
+        var comboOperand = GetComboOperator(operand);
+
+        switch (opcode)
+        {
+            case 0: // adv - division, numerator = A.val, denominator = 2^operand -> truncate to integer and write to A
+            // combo operand
+                var advResult = Math.Floor(regA / Math.Pow(2, comboOperand));
+                regA = (int)advResult;
+                instructionPtr += 2;
+            break;
+            case 1: // bxl - bitwise XOR of B and literal operand; result -> B
+                var bxlResult = regB ^ operand;
+                regB = bxlResult;
+                instructionPtr += 2;
+            break;
+            case 2: // bst - combo operand modulo 8 (only keeps lowest 3 bits), result -> B
+                var bstResult = comboOperand % 8;
+                regB = bstResult;
+                instructionPtr += 2;
+            break;
+            case 3: // jnz - if A == 0, nothing. A not zero, jumps to literal operand number (and doesn't add 2 after)
+                if (regA != 0)
+                {
+                    instructionPtr = operand;
+                }
+                else 
+                {
+                    instructionPtr += 2;
+                }
+            break;
+            case 4: // bxc - bitwise XOR of B and C, result -> B. Reads operand but IGNORES it.
+                var bxcResult = regB ^ regC;
+                regB = bxcResult;
+                instructionPtr += 2;
+            break;
+            case 5: // out - val of combo operand modulo 8, outputs value (sep. by comma)
+                var nextVal = comboOperand % 8;
+                var nextNum = string.Format("{0}", nextVal);
+                output.Add(nextNum);
+                instructionPtr += 2;
+                if (isPartTwo && instructions[output.Count - 1] != nextVal)
+                {
+                    break; // we failed
+                }
+            break;
+            case 6: // bdv - exactly like case 0 but result into B
+                var bdvResult = Math.Floor(regA / Math.Pow(2, comboOperand));
+                regB = (int)bdvResult;
+                instructionPtr += 2;
+            break;
+            case 7: // cdv - exactly like case 0 but result into C
+                var cdvResult = Math.Floor(regA / Math.Pow(2, comboOperand));
+                regC = (int)cdvResult;
+                instructionPtr += 2;
+            break;
+            default:
+            break;
+        }
+    }
+    if (!isPartTwo)
     {
         break;
     }
-    var opcode = instructions[instructionPtr];
-    var operand = instructionPtr < instructions.Count - 1 ? instructions[instructionPtr + 1] : 0; // hmmm
-
-    var comboOperand = GetComboOperator(operand);
-
-    switch (opcode)
+    // Console.WriteLine("{0} vs {1} ({2})", 
+    //     string.Join(",", instructions), 
+    //     string.Join(",", output.Select(int.Parse).ToList()), 
+    //     output.Count);
+    if (CheckMatch(instructions, output.Select(int.Parse).ToList()))
     {
-        case 0: // adv - division, numerator = A.val, denominator = 2^operand -> truncate to integer and write to A
-        // combo operand
-            var advResult = Math.Floor(regA / Math.Pow(2, comboOperand));
-            regA = (int)advResult;
-            instructionPtr += 2;
+        // got it!
+        Console.WriteLine("Found match at {0}", regAStartVal);
         break;
-        case 1: // bxl - bitwise XOR of B and literal operand; result -> B
-            var bxlResult = regB ^ operand;
-            regB = bxlResult;
-            instructionPtr += 2;
-        break;
-        case 2: // bst - combo operand modulo 8 (only keeps lowest 3 bits), result -> B
-            var bstResult = comboOperand % 8;
-            regB = bstResult;
-            instructionPtr += 2;
-        break;
-        case 3: // jnz - if A == 0, nothing. A not zero, jumps to literal operand number (and doesn't add 2 after)
-            if (regA != 0)
-            {
-                instructionPtr = operand;
-            }
-            else 
-            {
-                instructionPtr += 2;
-            }
-        break;
-        case 4: // bxc - bitwise XOR of B and C, result -> B. Reads operand but IGNORES it.
-            var bxcResult = regB ^ regC;
-            regB = bxcResult;
-            instructionPtr += 2;
-        break;
-        case 5: // out - val of combo operand modulo 8, outputs value (sep. by comma)
-            output.Add(string.Format("{0}", comboOperand % 8));
-            instructionPtr += 2;
-        break;
-        case 6: // bdv - exactly like case 0 but result into B
-            var bdvResult = Math.Floor(regA / Math.Pow(2, comboOperand));
-            regB = (int)bdvResult;
-            instructionPtr += 2;
-        break;
-        case 7: // cdv - exactly like case 0 but result into C
-            var cdvResult = Math.Floor(regA / Math.Pow(2, comboOperand));
-            regC = (int)cdvResult;
-            instructionPtr += 2;
-        break;
-        default:
-        break;
+    }
+    else
+    {
+        regAStartVal++;
+        instructionPtr = 0;
+        output.Clear();
     }
 }
+
 Console.WriteLine("{0}", string.Join(",", output));
