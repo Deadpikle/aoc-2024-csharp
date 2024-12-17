@@ -9,7 +9,7 @@ List<int> GetNums(string str)
     return matchCollection.Select(x => int.Parse(x.Value)).ToList();
 }
 
-var lines = File.ReadAllLines("example2.txt");
+var lines = File.ReadAllLines("input.txt");
 
 var originalRegA = GetNums(lines[0])[0];
 var originalRegB = GetNums(lines[1])[0];
@@ -48,7 +48,7 @@ while (true)
     regA = isPartTwo ? regAStartVal : regA;
     regB = originalRegB;
     regC = originalRegC;
-    if (regA % 10000000 == 0)
+    if (regA % 100000000 == 0)
     {
         Console.WriteLine("Reg A start val = {0:n0}; B = {1}, C = {2}", regA, regB, regC);
     }
@@ -84,7 +84,7 @@ while (true)
             // combo operand
             case 6: // bdv - exactly like case 0 but result into B
             case 7: // cdv - exactly like case 0 but result into C
-                var pow = Math.Pow(2, comboOperand);
+                var pow = 1 << (int)comboOperand;
                 long result = 0;
                 if (regA < pow)
                 {
@@ -95,17 +95,17 @@ while (true)
                     var advResult = (long)(regA / pow);
                     result = advResult;
                 }
-                if (opcode == 0)
+                switch (opcode)
                 {
+                    case 0:
                     regA = result;
-                }
-                else if (opcode == 6)
-                {
+                    break;
+                    case 6:
                     regB = result;
-                }
-                else if (opcode == 7)
-                {
+                    break;
+                    case 7:
                     regC = result;
+                    break;
                 }
                 instructionPtr += 2;
             break;
