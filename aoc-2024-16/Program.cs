@@ -120,7 +120,6 @@ char GetNext(int x, int y, char dir)
     return ' ';
 }
 
-// THIS IS VERY SLOW FOR THE BIG MAZE AND NOT OPTIMIZED BUT TECHNICALLY IT WORKS
 var currentBestScore = long.MaxValue;
 var bestPaths = new List<Dictionary<(int, int), bool>>();
 long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, int score, int steps, int turns, Dictionary<(int, int), bool> visitedThisPath, Dictionary<(int, int, char), long> locationScores)
