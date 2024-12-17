@@ -59,7 +59,8 @@ while (true)
             break;
         }
         var opcode = instructions[instructionPtr];
-        var operand = instructionPtr < instructions.Count - 1 ? instructions[instructionPtr + 1] : 0; // hmmm
+        // var operand = instructionPtr < instructions.Count - 1 ? instructions[instructionPtr + 1] : 0; // hmmm
+        var operand = instructions[instructionPtr + 1];
 
         long comboOperand = operand;
         switch (operand)
