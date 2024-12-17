@@ -169,6 +169,8 @@ long GetLengthToEnd(int currX, int currY, int endX, int endY, char direction, in
     }
     // Console.WriteLine("At: {0}, {1}: {2}; Steps: {3}, Turns: {4}", currX, currY, currSpot, steps, turns);
     // try moving all four directions and recurse
+    // Could probably shave off a little more time by removing the func calls for GetRotations somehow, 
+    // but for now, it runs in less than 30s, so probably OK :)
     var nextLeftScore = score + 1 + 1000 * GetRotations(direction, '<');
     var nextRightScore = score + 1 + 1000 * GetRotations(direction, '>');
     var nextUpScore = score + 1 + 1000 * GetRotations(direction, '^');
