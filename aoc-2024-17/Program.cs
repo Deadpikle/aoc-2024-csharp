@@ -84,17 +84,18 @@ while (true)
             // combo operand
             case 6: // bdv - exactly like case 0 but result into B
             case 7: // cdv - exactly like case 0 but result into C
-                var pow = 1 << (int)comboOperand;
-                long result = 0;
-                if (regA < pow)
-                {
-                    result = 0;
-                }
-                else
-                {
-                    var advResult = (long)(regA / pow);
-                    result = advResult;
-                }
+                //var pow = 1 << (int)comboOperand;
+                //long result = 0;
+                //if (regA < pow)
+                //{
+                //    result = 0;
+                //}
+                //else
+                //{
+                //    // var advResult = (long)(regA / pow);
+                //    result = regA >> (int)comboOperand;
+                //}
+                var result = regA >> (int)comboOperand;
                 switch (opcode)
                 {
                     case 0:
