@@ -24,7 +24,6 @@ var output = new LinkedList<long>();
 
 bool isPartTwo = true;
 long regAStartVal = isPartTwo ? 0 : regA;
-
 while (true)
 {
     // run program
@@ -57,7 +56,7 @@ while (true)
             comboOperand = regB;
             break;
             case 6:
-            comboOperand = regB;
+            comboOperand = regC;
             break;
             case 7:
             comboOperand = 0;
