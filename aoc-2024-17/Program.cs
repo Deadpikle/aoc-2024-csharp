@@ -9,7 +9,7 @@ List<int> GetNums(string str)
     return matchCollection.Select(x => int.Parse(x.Value)).ToList();
 }
 
-var lines = File.ReadAllLines("input.txt");
+var lines = File.ReadAllLines("example2.txt");
 
 var originalRegA = GetNums(lines[0])[0];
 var originalRegB = GetNums(lines[1])[0];
@@ -115,7 +115,8 @@ while (true)
                 instructionPtr += 2;
             break;
             case 2: // bst - combo operand modulo 8 (only keeps lowest 3 bits), result -> B
-                var bstResult = comboOperand % 8;
+                // var bstResult = comboOperand % 8;
+                var bstResult = comboOperand & 0x7;
                 regB = bstResult;
                 instructionPtr += 2;
             break;
@@ -135,7 +136,8 @@ while (true)
                 instructionPtr += 2;
             break;
             case 5: // out - val of combo operand modulo 8, outputs value (sep. by comma)
-                var nextVal = comboOperand % 8;
+                // var nextVal = comboOperand % 8;
+                var nextVal = comboOperand & 0x7;
                 if (isPartTwo && instructions[output.Count] != nextVal)
                 {
                     isPartTwoFailure = true;
